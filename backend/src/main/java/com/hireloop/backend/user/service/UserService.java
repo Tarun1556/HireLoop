@@ -20,4 +20,14 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword())); // hash before saving
         return userRepository.save(user);
     }
+    public User registerUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Email already in use: " + user.getEmail());
+        }
+        return createUser(user); // reuses existing BCrypt hashing logic
+    }
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+    }
 }

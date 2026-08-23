@@ -1,4 +1,4 @@
-package com.hireloop.backend.auth;
+package com.hireloop.backend.auth.security;
 
 import com.hireloop.backend.user.entity.User;
 import com.hireloop.backend.user.repository.UserRepository;

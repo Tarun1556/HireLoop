@@ -1,0 +1,6 @@
+$kind: http-request
+name: Get Current User - No Token
+description: ""
+url: http://localhost:8080/api/users/me
+method: GET
+order: 3119588853940103

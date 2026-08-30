@@ -1,0 +1,10 @@
+$kind: http-request
+name: Get Current User - Invalid Token
+description: ""
+url: http://localhost:8080/api/users/me
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: yJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0ZXN0QGhpcmVsb29wLmNvbSIsInJvbGUiOiJDQU5ESURBVEUiLCJ1c2VySWQiOjEsImlhdCI6MTc4ODExMDAyNSwiZXhwIjoxNzg4MTI0NDI1fQ.EJ2h0-5yuYhFUJ-fXBz3FpQhj3oXZjUYe9sId4lK0P9LPTz7MNteFtgejBf1jr5i
+order: 1228341252194303

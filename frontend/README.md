@@ -28,3 +28,4 @@ Ensure you have the following installed and running locally:
 Start your local MySQL server and create the database:
 ```sql
 CREATE DATABASE hireloop_db;
+

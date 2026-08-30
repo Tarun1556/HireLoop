@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,23 +44,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        try {
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-            );
-        }
-        catch (BadCredentialsException ex) {
-            return ResponseEntity.status(401).build();
-        }
-
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
         User user = userService.findByEmail(request.getEmail());
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name(), user.getId());
         AuthResponse response = new AuthResponse(
-            user.getId(),
-            user.getName(),
-            user.getEmail(),
-            user.getRole(),
-            token
+            user.getId(), user.getName(), user.getEmail(), user.getRole(), token
         );
         return ResponseEntity.ok(response);
     }

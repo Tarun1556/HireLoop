@@ -3,6 +3,7 @@ package com.hireloop.backend.auth.controller;
 import com.hireloop.backend.auth.dto.AuthResponse;
 import com.hireloop.backend.auth.dto.LoginRequest;
 import com.hireloop.backend.auth.dto.RegisterRequest;
+import com.hireloop.backend.auth.security.JwtUtil;
 import com.hireloop.backend.user.entity.User;
 import com.hireloop.backend.user.service.UserService;
 import jakarta.validation.Valid;
@@ -20,7 +21,7 @@ public class AuthController {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
-
+    private final JwtUtil jwtUtil;
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         User user = new User();
@@ -46,22 +47,22 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
-        } catch (BadCredentialsException ex) {
+        }
+        catch (BadCredentialsException ex) {
             return ResponseEntity.status(401).build();
         }
 
-        User user = userService.getUserByEmail(request.getEmail());
-
+        User user = userService.findByEmail(request.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name(), user.getId());
         AuthResponse response = new AuthResponse(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole(),
-                null // token added Day 11
+            user.getId(),
+            user.getName(),
+            user.getEmail(),
+            user.getRole(),
+            token
         );
-
         return ResponseEntity.ok(response);
     }
 }

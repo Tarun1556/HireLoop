@@ -6,6 +6,9 @@ import com.hireloop.backend.candidate.entity.Candidate;
 import com.hireloop.backend.candidate.repository.CandidateRepository;
 import com.hireloop.backend.user.entity.User;
 import com.hireloop.backend.user.repository.UserRepository;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -56,5 +59,26 @@ public class CandidateService {
         response.setExperience(candidate.getExperience());
         response.setCreatedAt(candidate.getCreatedAt());
         return response;
+    }
+    public CandidateResponse getById(Long id) {
+        Candidate candidate = candidateRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Candidate not found with id: " + id));
+        return toResponse(candidate);
+    }
+    public List<CandidateResponse> getAll() {
+        return candidateRepository.findAll().stream()
+            .map(this::toResponse)
+            .collect(Collectors.toList());
+    }
+
+    public CandidateResponse updateMyProfile(String email, CandidateRequest request) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+        Candidate candidate = candidateRepository.findByUserId(user.getId())
+            .orElseThrow(() -> new IllegalArgumentException("Candidate profile not found"));
+        candidate.setResumeUrl(request.getResumeUrl());
+        candidate.setExperience(request.getExperience());
+        Candidate saved = candidateRepository.save(candidate);
+        return toResponse(saved);
     }
 }

@@ -10,3 +10,6 @@ variables:
   - key: json_web_token_0l91
     secret: true
     disabled: false
+  - key: supabase_service_role_api_key_091p
+    secret: true
+    disabled: false

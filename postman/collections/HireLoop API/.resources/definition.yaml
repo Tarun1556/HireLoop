@@ -1,5 +1,4 @@
 $kind: collection
-name: HireLoop API
 variables:
   - key: supabase_service_role_api_key_09lk
     secret: true
@@ -11,5 +10,14 @@ variables:
     secret: true
     disabled: false
   - key: supabase_service_role_api_key_091p
+    secret: true
+    disabled: false
+  - key: json_web_token_0k36
+    secret: true
+    disabled: false
+  - key: json_web_token_09up
+    secret: true
+    disabled: false
+  - key: supabase_service_role_api_key_0jxo
     secret: true
     disabled: false

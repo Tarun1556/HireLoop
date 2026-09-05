@@ -1,0 +1,8 @@
+$kind: http-request
+url: http://localhost:8080/api/candidates/abc
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_16pw}}"
+order: 1788597575540

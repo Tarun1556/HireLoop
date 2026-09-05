@@ -21,3 +21,18 @@ variables:
   - key: supabase_service_role_api_key_0jxo
     secret: true
     disabled: false
+  - key: json_web_token_16pw
+    secret: true
+    disabled: false
+  - key: supabase_service_role_api_key_16pw
+    secret: true
+    disabled: false
+  - key: json_web_token_0hoh
+    secret: true
+    disabled: false
+  - key: supabase_service_role_api_key_0hoh
+    secret: true
+    disabled: false
+  - key: supabase_service_role_api_key_1e22
+    secret: true
+    disabled: false

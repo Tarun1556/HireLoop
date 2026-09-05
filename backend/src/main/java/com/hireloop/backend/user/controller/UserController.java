@@ -3,7 +3,6 @@ package com.hireloop.backend.user.controller;
 import com.hireloop.backend.auth.security.UserPrincipal;
 import com.hireloop.backend.user.dto.UserResponse;
 import com.hireloop.backend.user.entity.User;
-import com.hireloop.backend.user.repository.UserRepository;
 import com.hireloop.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
     private final UserService userService;
 
     @GetMapping("/me")

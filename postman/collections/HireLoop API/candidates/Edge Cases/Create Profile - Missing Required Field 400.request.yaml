@@ -1,0 +1,12 @@
+$kind: http-request
+description: ""
+url: " http://localhost:8080/api/candidates/me"
+method: POST
+body:
+  type: json
+  content: '{ "experience": "1 year" }'
+auth:
+  type: bearer
+  credentials:
+    token: "{{supabase_service_role_api_key_0hoh}}"
+order: 3523305046485422

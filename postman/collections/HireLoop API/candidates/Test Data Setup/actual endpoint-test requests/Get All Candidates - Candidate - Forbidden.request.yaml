@@ -1,0 +1,9 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/candidates
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJjYW5kaWRhdGVkYXkxOEB0ZXN0LmNvbSIsInJvbGUiOiJDQU5ESURBVEUiLCJ1c2VySWQiOjExLCJpYXQiOjE3ODgzNjkzMTMsImV4cCI6MTc4ODM4MzcxM30.bmltr23uaT9sPiZEpeZNqodgcDLezAgTdGiLfhTB2aGoW3ntzuvIcTox9JZE2Y0V
+order: 4453994510104529

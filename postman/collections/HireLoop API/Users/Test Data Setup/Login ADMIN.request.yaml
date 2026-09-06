@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/auth/login
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"admin@hireloop.com\",\r
+
+    \  \"password\": \"admin123\"\r
+
+    }\r\n"
+order: 4310260741825761

@@ -12,14 +12,90 @@ A full-stack interview management platform. Streamlines the hiring pipeline — 
 - **API testing:** Postman ("HireLoop API" collection)
 
 ## Project Structure
-
-```
+Project Structure (as of end of Week 3)
 HireLoop/
-├── backend/     → Spring Boot REST API (port 8080)
-├── frontend/    → React + Vite app (port 5173)
-├── postman/     → "HireLoop API" Postman collection
-└── docker-compose.yml   → placeholder, filled in later
-```
+├── README.md                                  → root-level project docs (Week 2 auth section + Week 3 candidate/user section)
+├── backend/
+│   └── src/main/java/com/hireloop/backend/
+│       ├── BackendApplication.java
+│       ├── common/
+│       │   ├── exception/
+│       │   │   └── GlobalExceptionHandler.java   → @RestControllerAdvice, consistent JSON error shape.
+│       │   │                                        Handles: IllegalArgumentException, BadCredentialsException,
+│       │   │                                        AccessDeniedException, MethodArgumentNotValidException,
+│       │   │                                        MethodArgumentTypeMismatchException (Week 3, Day 19),
+│       │   │                                        HttpMessageNotReadableException (Week 3, Day 19),
+│       │   │                                        generic Exception fallback (500)
+│       │   ├── response/
+│       │   │   └── ErrorResponse.java            → {status, error, message, timestamp}
+│       │   └── util/
+│       ├── config/
+│       │   ├── CorsConfig.java                → allows http://localhost:5173
+│       │   └── SecurityConfig.java            → filter chain, BCrypt bean, DaoAuthenticationProvider,
+│       │                                        AuthenticationManager bean, JWT filter registration,
+│       │                                        @EnableMethodSecurity
+│       ├── auth/
+│       │   ├── controller/
+│       │   │   └── AuthController.java        → POST /api/auth/register, /login
+│       │   ├── dto/
+│       │   │   ├── RegisterRequest.java
+│       │   │   ├── LoginRequest.java
+│       │   │   └── AuthResponse.java
+│       │   └── security/
+│       │       ├── UserPrincipal.java           → wraps User, implements UserDetails
+│       │       ├── CustomUserDetailsService.java → loads User by email for Spring Security
+│       │       ├── JwtUtil.java                  → generate/validate/parse JWT (email, role, userId claims)
+│       │       └── JwtAuthenticationFilter.java  → OncePerRequestFilter, validates Bearer token per request
+│       ├── user/
+│       │   ├── controller/
+│       │   │   └── UserController.java        → GET /api/users/me, GET /api/users (ADMIN),
+│       │   │                                     GET /api/users/{id} (ADMIN) — all return UserResponse DTO
+│       │   ├── dto/
+│       │   │   └── UserResponse.java          → {id, name, email, role, createdAt} — no password field (Day 18 fix)
+│       │   ├── entity/
+│       │   │   ├── User.java                  → id, name, email, password (BCrypt-hashed), role, createdAt
+│       │   │   └── Role.java                  → enum: ADMIN, INTERVIEWER, CANDIDATE
+│       │   ├── repository/
+│       │   │   └── UserRepository.java        → findByEmail, existsByEmail
+│       │   └── service/
+│       │       └── UserService.java           → registerUser, findByEmail, getUserById, getAllUsers,
+│       │                                         toUserResponse (shared User → UserResponse mapper)
+│       ├── candidate/     ✅ built — Week 3
+│       │   ├── controller/
+│       │   │   └── CandidateController.java   → POST/GET/PUT /api/candidates/me (CANDIDATE),
+│       │   │                                     GET /api/candidates/{id}, GET /api/candidates (ADMIN, INTERVIEWER)
+│       │   ├── dto/
+│       │   │   ├── CandidateRequest.java      → {resumeUrl, experience} — both @NotBlank
+│       │   │   └── CandidateResponse.java     → {id, userId, name, email, resumeUrl, experience, createdAt}
+│       │   ├── entity/
+│       │   │   └── Candidate.java             → id (own auto-increment PK), user (OneToOne, unique user_id FK),
+│       │   │                                     resumeUrl, experience, createdAt (@PrePersist)
+│       │   ├── repository/
+│       │   │   └── CandidateRepository.java   → findByUserId, existsByUserId
+│       │   └── service/
+│       │       └── CandidateService.java      → createProfile, getMyProfile, updateMyProfile, getById, getAll
+│       ├── interview/     (not yet built — Week 4)
+│       ├── evaluation/    (not yet built — Week 6)
+│       └── question/      (not yet built — Week 5)
+├── frontend/
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       ├── layouts/
+│       ├── services/
+│       │   └── api.js                        → axios instance, baseURL http://localhost:8080/api
+│       ├── hooks/
+│       ├── context/
+│       └── utils/
+├── postman/
+│   └── collections/HireLoop API/
+│       ├── Auth/          → register, login (success + failure cases)
+│       ├── Users/         → /me, /users, /users/{id} requests; Admin subfolder for role tests; Edge Cases subfolder
+│       └── Candidates/    → /me (create/get/update), /{id}, list-all requests; Edge Cases subfolder;
+│                             Setup subfolder for test-data seed requests (register/login test users)
+└── docker-compose.yml    (placeholder, filled in Week 8)
+
+Group ID: com.hireloop, Artifact: backend, Package: com.hireloop.backend
 
 Backend package structure is feature-based: each domain (`user`, `auth`, `candidate`, `interview`, `question`, `evaluation`) owns its own `controller/service/repository/entity/dto`.
 
@@ -130,13 +206,58 @@ HireLoop uses JWT-based stateless authentication with Spring Security. Passwords
 ### Environment setup
 `backend/src/main/resources/application.yml` is gitignored (contains DB credentials and the JWT signing secret). Copy `application.yml.example` and fill in real values before running locally.
 
+## Candidate & User Management (Week 3)
+
+### Candidate Endpoints
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| POST | /api/candidates/me | CANDIDATE | Create own candidate profile |
+| GET | /api/candidates/me | CANDIDATE | Get own candidate profile |
+| PUT | /api/candidates/me | CANDIDATE | Update own candidate profile |
+| GET | /api/candidates/{id} | ADMIN, INTERVIEWER | Get a specific candidate by id |
+| GET | /api/candidates | ADMIN, INTERVIEWER | List all candidates |
+
+### User Endpoints (extended)
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | /api/users/me | Authenticated | Get own user profile (no password field) |
+| GET | /api/users | ADMIN | List all users (no password fields) |
+| GET | /api/users/{id} | ADMIN | Get a specific user by id |
+
+### Example — Create Candidate Profile
+**Request:** `POST /api/candidates/me`
+```json
+{
+  "resumeUrl": "https://example.com/resume.pdf",
+  "experience": "2 years"
+}
+```
+**Response (201):**
+```json
+{
+  "id": 1,
+  "userId": 5,
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "resumeUrl": "https://example.com/resume.pdf",
+  "experience": "2 years",
+  "createdAt": "2026-09-01T10:00:00"
+}
+```
+
+### Key Decisions (Week 3)
+- **Candidate identity:** own auto-increment `id`, separate `user_id` FK with a unique constraint (not a shared-PK `@MapsId`) — keeps `Candidate.id` independent for future FKs (e.g. `interviews.candidate_id` in Week 4).
+- **DTO discipline:** all user/candidate responses go through `UserResponse`/`CandidateResponse` DTOs — fixed a password-hash leak in `/api/users/me` and `/api/users` originally returning the raw `User` entity.
+- **Error handling:** extended `GlobalExceptionHandler` with `MethodArgumentTypeMismatchException` (bad path variable types) and `HttpMessageNotReadableException` (malformed/empty JSON body) handlers.
+- **Self-registration restriction:** deliberately deferred — anyone can still self-register as ADMIN/INTERVIEWER. Flagged for future work once admin-managed account creation exists.
+
 ## 8-Week Roadmap
 
 | Week | Focus | Status |
 |---|---|---|
 | 1 | Foundation & project setup | ✅ Complete |
 | 2 | Authentication & Authorization (JWT, roles) | ✅ Complete |
-| 3 | User & Candidate Management | Not started |
+| 3 | User & Candidate Management | ✅ Complete  |
 | 4 | Interview Scheduling | Not started |
 | 5 | Interview Questions | Not started |
 | 6 | Evaluation | Not started |

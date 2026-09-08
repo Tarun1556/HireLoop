@@ -11,8 +11,11 @@ import com.hireloop.backend.user.entity.Role;
 import com.hireloop.backend.user.entity.User;
 import com.hireloop.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class InterviewService {
@@ -44,6 +47,44 @@ public class InterviewService {
         return toInterviewResponse(saved);
     }
 
+    public InterviewResponse getInterviewById(Long id, Authentication authentication) {
+        Interview interview = interviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Interview not found"));
+
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (currentUser.getRole() == Role.INTERVIEWER
+                && !interview.getInterviewer().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("Not authorized to view this interview");
+        }
+        return toInterviewResponse(interview);
+    }
+    public List<InterviewResponse> getInterviewsByCandidateId(Long candidateId) {
+        return interviewRepository.findByCandidateId(candidateId).stream()
+                .map(this::toInterviewResponse)
+                .toList();
+    }
+
+    public List<InterviewResponse> getMyInterviewsAsInterviewer(Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        return interviewRepository.findByInterviewerId(currentUser.getId()).stream()
+                .map(this::toInterviewResponse)
+                .toList();
+    }
+    public List<InterviewResponse> getMyInterviewsAsCandidate(Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Candidate candidate = candidateRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Candidate profile not found"));
+
+        return interviewRepository.findByCandidateId(candidate.getId()).stream()
+                .map(this::toInterviewResponse)
+                .toList();
+    }
     public InterviewResponse toInterviewResponse(Interview interview) {
         return new InterviewResponse(
                 interview.getId(),

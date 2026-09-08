@@ -39,3 +39,15 @@ variables:
   - key: supabase_service_role_api_key_0ict
     secret: true
     disabled: false
+  - key: json_web_token_0oj0
+    secret: true
+    disabled: false
+  - key: supabase_service_role_api_key_0oj0
+    secret: true
+    disabled: false
+  - key: supabase_service_role_api_key_0pfn
+    secret: true
+    disabled: false
+  - key: supabase_service_role_api_key_17tk
+    secret: true
+    disabled: false

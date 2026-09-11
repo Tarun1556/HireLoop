@@ -1,0 +1,9 @@
+$kind: http-request
+description: ""
+url: " http://localhost:8080/api/interviews/1"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{supabase_service_role_api_key_0k6y}}"
+order: 1789102464492

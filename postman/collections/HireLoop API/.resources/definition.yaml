@@ -51,3 +51,27 @@ variables:
   - key: supabase_service_role_api_key_17tk
     secret: true
     disabled: false
+  - key: json_web_token_1doa
+    secret: true
+    disabled: false
+  - key: supabase_service_role_api_key_11uk
+    secret: true
+    disabled: false
+  - key: json_web_token_11uk
+    secret: true
+    disabled: false
+  - key: supabase_service_role_api_key_0k6y
+    secret: true
+    disabled: false
+  - key: json_web_token_10kd
+    secret: true
+    disabled: false
+  - key: supabase_service_role_api_key_1doa
+    secret: true
+    disabled: false
+  - key: json_web_token_0k6y
+    secret: true
+    disabled: false
+  - key: json_web_token_18ra
+    secret: true
+    disabled: false

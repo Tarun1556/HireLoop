@@ -1,0 +1,9 @@
+$kind: http-request
+description: ""
+url: " http://localhost:8080/api/interviews/abc"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0k6y}}"
+order: 3777812612995383

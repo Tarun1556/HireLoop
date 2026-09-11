@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
+import com.hireloop.backend.interview.dto.InterviewUpdateRequest;
 
 @RestController
 @RequestMapping("/api/interviews")
@@ -30,6 +31,14 @@ public class InterviewController {
     @PreAuthorize("hasAnyRole('ADMIN', 'INTERVIEWER')")
     public ResponseEntity<InterviewResponse> getInterviewById(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(interviewService.getInterviewById(id, authentication));
+    }
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INTERVIEWER')")
+    public ResponseEntity<InterviewResponse> updateInterview(
+        @PathVariable Long id,
+        @Valid @RequestBody InterviewUpdateRequest request,
+        Authentication authentication) {
+        return ResponseEntity.ok(interviewService.updateInterview(id, request, authentication));
     }
 
     @GetMapping("/candidate/{candidateId}")

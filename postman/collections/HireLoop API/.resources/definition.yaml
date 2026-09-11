@@ -75,3 +75,18 @@ variables:
   - key: json_web_token_18ra
     secret: true
     disabled: false
+  - key: supabase_service_role_api_key_1csk
+    secret: true
+    disabled: false
+  - key: json_web_token_0j03
+    secret: true
+    disabled: false
+  - key: json_web_token_0aju
+    secret: true
+    disabled: false
+  - key: json_web_token_08xk
+    secret: true
+    disabled: false
+  - key: json_web_token_1csk
+    secret: true
+    disabled: false

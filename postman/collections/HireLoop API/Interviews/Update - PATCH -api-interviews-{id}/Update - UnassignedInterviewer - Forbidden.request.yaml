@@ -1,0 +1,12 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/interviews/1
+method: PATCH
+body:
+  type: json
+  content: "{\r\n  \"status\": \"CANCELLED\"\r\n}"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0aju}}"
+order: 4459810412094883

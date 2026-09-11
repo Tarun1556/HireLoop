@@ -1,0 +1,18 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/interviews/2
+method: PATCH
+body:
+  type: json
+  content: "{\r
+
+    \  \"scheduledAt\": \"2026-09-24T14:00:00\",\r
+
+    \  \"status\": \"CANCELLED\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{supabase_service_role_api_key_1csk}}"
+order: 4342695717533173

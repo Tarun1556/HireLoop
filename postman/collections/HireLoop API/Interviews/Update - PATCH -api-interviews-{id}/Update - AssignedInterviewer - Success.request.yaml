@@ -1,0 +1,18 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/interviews/3
+method: PATCH
+body:
+  type: json
+  content: "\r
+
+    {\r
+
+    \  \"status\": \"COMPLETED\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0j03}}"
+order: 4454177616978947

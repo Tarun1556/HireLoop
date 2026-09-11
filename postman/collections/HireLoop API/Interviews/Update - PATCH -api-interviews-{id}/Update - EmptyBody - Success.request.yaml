@@ -1,0 +1,12 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/interviews/1
+method: PATCH
+body:
+  type: json
+  content: "{}   "
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_1csk}}"
+order: 4500071025296927

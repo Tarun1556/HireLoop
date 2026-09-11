@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import com.hireloop.backend.interview.dto.InterviewUpdateRequest;
 
 import java.util.List;
 @Service
@@ -84,6 +85,30 @@ public class InterviewService {
         return interviewRepository.findByCandidateId(candidate.getId()).stream()
                 .map(this::toInterviewResponse)
                 .toList();
+    }
+    public InterviewResponse updateInterview(Long id, InterviewUpdateRequest request, Authentication authentication) {
+        Interview interview = interviewRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Interview not found"));
+
+        User currentUser = userRepository.findByEmail(authentication.getName())
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (currentUser.getRole() == Role.INTERVIEWER
+            && !interview.getInterviewer().getId().equals(currentUser.getId())) {
+                throw new AccessDeniedException("Not authorized to update this interview");
+        }
+
+        if (request.getScheduledAt() != null) {
+                interview.setScheduledAt(request.getScheduledAt());
+        }
+
+        if (request.getStatus() != null) {
+                interview.setStatus(request.getStatus());
+        }
+
+        Interview updated = interviewRepository.save(interview);
+
+        return toInterviewResponse(updated);
     }
     public InterviewResponse toInterviewResponse(Interview interview) {
         return new InterviewResponse(

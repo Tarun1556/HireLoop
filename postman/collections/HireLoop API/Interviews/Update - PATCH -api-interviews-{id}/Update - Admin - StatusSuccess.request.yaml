@@ -1,0 +1,12 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/interviews/1
+method: PATCH
+body:
+  type: json
+  content: "{\r\n  \"status\": \"COMPLETED\"\r\n}"
+auth:
+  type: bearer
+  credentials:
+    token: "{{supabase_service_role_api_key_1csk}}"
+order: 4278097841468220

@@ -61,11 +61,15 @@ public class InterviewService {
         }
         return toInterviewResponse(interview);
     }
-    public List<InterviewResponse> getInterviewsByCandidateId(Long candidateId) {
+   public List<InterviewResponse> getInterviewsByCandidateId(Long candidateId) {
+        if (!candidateRepository.existsById(candidateId)) {
+                throw new IllegalArgumentException("Candidate not found");
+        }
+
         return interviewRepository.findByCandidateId(candidateId).stream()
-                .map(this::toInterviewResponse)
-                .toList();
-    }
+            .map(this::toInterviewResponse)
+            .toList();
+}
 
     public List<InterviewResponse> getMyInterviewsAsInterviewer(Authentication authentication) {
         User currentUser = userRepository.findByEmail(authentication.getName())

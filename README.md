@@ -10,93 +10,6 @@ A full-stack interview management platform. Streamlines the hiring pipeline — 
 - **Auth:** Spring Security + JWT (stateless)
 - **IDE / OS:** VS Code, Windows (PowerShell)
 - **API testing:** Postman ("HireLoop API" collection)
-
-## Project Structure
-Project Structure (as of end of Week 3)
-HireLoop/
-├── README.md                                  → root-level project docs (Week 2 auth section + Week 3 candidate/user section)
-├── backend/
-│   └── src/main/java/com/hireloop/backend/
-│       ├── BackendApplication.java
-│       ├── common/
-│       │   ├── exception/
-│       │   │   └── GlobalExceptionHandler.java   → @RestControllerAdvice, consistent JSON error shape.
-│       │   │                                        Handles: IllegalArgumentException, BadCredentialsException,
-│       │   │                                        AccessDeniedException, MethodArgumentNotValidException,
-│       │   │                                        MethodArgumentTypeMismatchException (Week 3, Day 19),
-│       │   │                                        HttpMessageNotReadableException (Week 3, Day 19),
-│       │   │                                        generic Exception fallback (500)
-│       │   ├── response/
-│       │   │   └── ErrorResponse.java            → {status, error, message, timestamp}
-│       │   └── util/
-│       ├── config/
-│       │   ├── CorsConfig.java                → allows http://localhost:5173
-│       │   └── SecurityConfig.java            → filter chain, BCrypt bean, DaoAuthenticationProvider,
-│       │                                        AuthenticationManager bean, JWT filter registration,
-│       │                                        @EnableMethodSecurity
-│       ├── auth/
-│       │   ├── controller/
-│       │   │   └── AuthController.java        → POST /api/auth/register, /login
-│       │   ├── dto/
-│       │   │   ├── RegisterRequest.java
-│       │   │   ├── LoginRequest.java
-│       │   │   └── AuthResponse.java
-│       │   └── security/
-│       │       ├── UserPrincipal.java           → wraps User, implements UserDetails
-│       │       ├── CustomUserDetailsService.java → loads User by email for Spring Security
-│       │       ├── JwtUtil.java                  → generate/validate/parse JWT (email, role, userId claims)
-│       │       └── JwtAuthenticationFilter.java  → OncePerRequestFilter, validates Bearer token per request
-│       ├── user/
-│       │   ├── controller/
-│       │   │   └── UserController.java        → GET /api/users/me, GET /api/users (ADMIN),
-│       │   │                                     GET /api/users/{id} (ADMIN) — all return UserResponse DTO
-│       │   ├── dto/
-│       │   │   └── UserResponse.java          → {id, name, email, role, createdAt} — no password field (Day 18 fix)
-│       │   ├── entity/
-│       │   │   ├── User.java                  → id, name, email, password (BCrypt-hashed), role, createdAt
-│       │   │   └── Role.java                  → enum: ADMIN, INTERVIEWER, CANDIDATE
-│       │   ├── repository/
-│       │   │   └── UserRepository.java        → findByEmail, existsByEmail
-│       │   └── service/
-│       │       └── UserService.java           → registerUser, findByEmail, getUserById, getAllUsers,
-│       │                                         toUserResponse (shared User → UserResponse mapper)
-│       ├── candidate/     ✅ built — Week 3
-│       │   ├── controller/
-│       │   │   └── CandidateController.java   → POST/GET/PUT /api/candidates/me (CANDIDATE),
-│       │   │                                     GET /api/candidates/{id}, GET /api/candidates (ADMIN, INTERVIEWER)
-│       │   ├── dto/
-│       │   │   ├── CandidateRequest.java      → {resumeUrl, experience} — both @NotBlank
-│       │   │   └── CandidateResponse.java     → {id, userId, name, email, resumeUrl, experience, createdAt}
-│       │   ├── entity/
-│       │   │   └── Candidate.java             → id (own auto-increment PK), user (OneToOne, unique user_id FK),
-│       │   │                                     resumeUrl, experience, createdAt (@PrePersist)
-│       │   ├── repository/
-│       │   │   └── CandidateRepository.java   → findByUserId, existsByUserId
-│       │   └── service/
-│       │       └── CandidateService.java      → createProfile, getMyProfile, updateMyProfile, getById, getAll
-│       ├── interview/     (not yet built — Week 4)
-│       ├── evaluation/    (not yet built — Week 6)
-│       └── question/      (not yet built — Week 5)
-├── frontend/
-│   └── src/
-│       ├── components/
-│       ├── pages/
-│       ├── layouts/
-│       ├── services/
-│       │   └── api.js                        → axios instance, baseURL http://localhost:8080/api
-│       ├── hooks/
-│       ├── context/
-│       └── utils/
-├── postman/
-│   └── collections/HireLoop API/
-│       ├── Auth/          → register, login (success + failure cases)
-│       ├── Users/         → /me, /users, /users/{id} requests; Admin subfolder for role tests; Edge Cases subfolder
-│       └── Candidates/    → /me (create/get/update), /{id}, list-all requests; Edge Cases subfolder;
-│                             Setup subfolder for test-data seed requests (register/login test users)
-└── docker-compose.yml    (placeholder, filled in Week 8)
-
-Group ID: com.hireloop, Artifact: backend, Package: com.hireloop.backend
-
 Backend package structure is feature-based: each domain (`user`, `auth`, `candidate`, `interview`, `question`, `evaluation`) owns its own `controller/service/repository/entity/dto`.
 
 ## Getting Started
@@ -250,6 +163,68 @@ HireLoop uses JWT-based stateless authentication with Spring Security. Passwords
 - **DTO discipline:** all user/candidate responses go through `UserResponse`/`CandidateResponse` DTOs — fixed a password-hash leak in `/api/users/me` and `/api/users` originally returning the raw `User` entity.
 - **Error handling:** extended `GlobalExceptionHandler` with `MethodArgumentTypeMismatchException` (bad path variable types) and `HttpMessageNotReadableException` (malformed/empty JSON body) handlers.
 - **Self-registration restriction:** deliberately deferred — anyone can still self-register as ADMIN/INTERVIEWER. Flagged for future work once admin-managed account creation exists.
+
+## Week 4: Interview Scheduling
+
+### Endpoints
+
+| Method | Path | Access | Description |
+|---|---|---|---|
+| POST | `/api/interviews` | ADMIN, INTERVIEWER | Schedule a new interview |
+| GET | `/api/interviews/{id}` | ADMIN, INTERVIEWER (own only) | Fetch a single interview |
+| GET | `/api/interviews/candidate/{candidateId}` | ADMIN, INTERVIEWER | List all interviews for a candidate |
+| GET | `/api/interviews/me` | INTERVIEWER | List interviews assigned to the authenticated interviewer |
+| GET | `/api/interviews/candidate/me` | CANDIDATE | List the authenticated candidate's own interviews |
+| PATCH | `/api/interviews/{id}` | ADMIN, INTERVIEWER (own only) | Partially update `scheduledAt` and/or `status` |
+
+### Request Example — Schedule Interview
+`POST /api/interviews`
+\```json
+{
+  "candidateId": 2,
+  "interviewerId": 13,
+  "interviewType": "TECHNICAL",
+  "scheduledAt": "2026-09-25T10:00:00"
+}
+\```
+
+### Response Example
+\```json
+{
+  "id": 1,
+  "candidateId": 2,
+  "candidateName": "Test Candidate",
+  "interviewerId": 13,
+  "interviewerName": "Test Interviewer",
+  "scheduledAt": "2026-09-25T10:00:00",
+  "status": "SCHEDULED",
+  "interviewType": "TECHNICAL",
+  "createdAt": "2026-09-08T12:00:00"
+}
+\```
+
+### Request Example — Partial Update
+`PATCH /api/interviews/{id}`
+\```json
+{
+  "status": "COMPLETED"
+}
+\```
+Only fields present in the request body are updated; omitted fields remain unchanged.
+
+### Key Decisions
+- **Candidate/Interviewer linked via `@ManyToOne`, not embedded data** — `Interview` references `Candidate` and `User` (interviewer) by relationship, keeping a single source of truth for names/emails rather than duplicating them.
+- **Interviewer role validated at schedule time** — `interviewerId` must belong to a `User` with `Role.INTERVIEWER`; attempting to assign a non-interviewer returns `400`.
+- **Ownership enforced on `GetById` and `PATCH`** — an `INTERVIEWER` can only view/update interviews assigned to them; `ADMIN` has unrestricted access. Enforced in the service layer (requires a DB lookup, not expressible via `@PreAuthorize` alone).
+- **`status` defaults to `SCHEDULED`** on creation via `@PrePersist`, reinforced explicitly in the service layer.
+- **`PATCH` is a true partial update** — omitted fields are left untouched, not nulled out; verified via `Update - EmptyBody - Success` test case.
+- **`GetByCandidateId` now returns `400` for a nonexistent candidate** (fixed Day 28), consistent with `GetById`'s not-found behavior — previously returned a silently misleading `200 []`.
+
+### Known Deferred Items (Week 4)
+- No/invalid JWT currently returns `403` rather than `401`, due to Spring Security's anonymous authentication being evaluated before `@PreAuthorize` — would require an explicit `AuthenticationEntryPoint` to properly distinguish "unauthenticated" from "forbidden."
+- Double-booking prevention — no check yet preventing the same interviewer being scheduled twice at the same time.
+- `candidateId` field naming ambiguity — `candidates.id` vs `users.id` confusion surfaced during testing; a future rename to `candidateProfileId` was discussed but not yet implemented.
+- No status-transition rules on `PATCH` (e.g. `COMPLETED` → `SCHEDULED` is currently allowed) — accepted as out of scope for MVP.
 
 ## 8-Week Roadmap
 

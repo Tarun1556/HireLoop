@@ -8,5 +8,5 @@ body:
 auth:
   type: bearer
   credentials:
-    token: "{{json_web_token_1csk}}"
+    token: "{{admin_token}}"
 order: 4500071025296927

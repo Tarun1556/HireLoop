@@ -18,5 +18,5 @@ body:
 auth:
   type: bearer
   credentials:
-    token: "{{json_web_token_1doa}}"
+    token: "{{candidate_token}}"
 order: 489126835688960

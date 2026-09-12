@@ -1,4 +1,8 @@
 $kind: http-request
 url: ""
 method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_token}}"
 order: 3352148177961908

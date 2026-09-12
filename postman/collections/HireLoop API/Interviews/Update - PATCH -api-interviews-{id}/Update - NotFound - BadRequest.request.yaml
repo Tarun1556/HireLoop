@@ -12,5 +12,5 @@ body:
 auth:
   type: bearer
   credentials:
-    token: "{{supabase_service_role_api_key_1csk}}"
+    token: "{{admin_token}}"
 order: 4498956303241734

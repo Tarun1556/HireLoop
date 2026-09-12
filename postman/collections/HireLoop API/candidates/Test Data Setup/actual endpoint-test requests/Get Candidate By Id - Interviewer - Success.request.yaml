@@ -5,5 +5,5 @@ method: GET
 auth:
   type: bearer
   credentials:
-    token: eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJpbnRlcnZpZXdlcmRheTE4QHRlc3QuY29tIiwicm9sZSI6IklOVEVSVklFV0VSIiwidXNlcklkIjoxMywiaWF0IjoxNzg4MzY5ODM4LCJleHAiOjE3ODgzODQyMzh9.286NX_YLTUB0gp_KVWPptMkKNNlLx1_pVNt1F0U90ZTEzIytawdCI4vauqmaoLE2
+    token: "{{interviewer_token}}"
 order: 410283015084306

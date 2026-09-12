@@ -5,5 +5,5 @@ method: GET
 auth:
   type: bearer
   credentials:
-    token: "{{supabase_service_role_api_key_16pw}}"
+    token: "{{candidate_token}}"
 order: 4152994085702174

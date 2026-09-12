@@ -18,5 +18,5 @@ body:
 auth:
   type: bearer
   credentials:
-    token: "{{supabase_service_role_api_key_0oj0}}"
+    token: "{{admin_token}}"
 order: 1788863048213

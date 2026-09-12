@@ -5,5 +5,5 @@ method: GET
 auth:
   type: bearer
   credentials:
-    token: "{{json_web_token_0k36}}"
+    token: "{{admin_token}}"
 order: 3380722852089329

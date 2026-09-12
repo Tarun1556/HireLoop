@@ -14,5 +14,5 @@ body:
 auth:
   type: bearer
   credentials:
-    token: eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbmRheTE4QHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwidXNlcklkIjoxMiwiaWF0IjoxNzg4MzY5Njk5LCJleHAiOjE3ODgzODQwOTl9.AtBdu0vpL6voPKNyDo7ulC4l2gPx1aSu9Ovky1BAN2HO7bIDbHIbnxXo0bA03AYr
+    token: "{{admin_token}}"
 order: 4466349242822810

@@ -8,5 +8,5 @@ body:
 auth:
   type: bearer
   credentials:
-    token: "{{json_web_token_08xk}}"
+    token: "{{interviewer_token}}"
 order: 4492699733481529

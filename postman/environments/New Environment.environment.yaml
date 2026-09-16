@@ -1,0 +1,6 @@
+name: New Environment
+values:
+  - key: question_id
+    value: ''
+  - key: admin_token
+    secret: true

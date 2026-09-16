@@ -1,0 +1,19 @@
+$kind: http-request
+name: GetAll - Filtered-admin/interviewer-200
+description: ""
+url: http://localhost:8080/api/questions?category=DSA&difficulty=EASY
+method: GET
+queryParams:
+  - key: category
+    value: DSA
+    disabled: false
+    description: ""
+  - key: difficulty
+    value: EASY
+    disabled: false
+    description: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_token}}"
+order: 4474985638424861

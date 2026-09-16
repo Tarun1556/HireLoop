@@ -1,0 +1,28 @@
+$kind: http-request
+description: ""
+url: " http://localhost:8080/api/questions"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"title\": \"Reverse a linked list\",\r
+
+    \  \"category\": \"DSA\",\r
+
+    \  \"difficulty\": \"EASY\",\r
+
+    \  \"description\": \"Given the head of a singly linked list, reverse it in place.\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_1ah4}}"
+scripts:
+  - type: afterResponse
+    code: "const res = pm.response.json();\r
+
+      pm.collectionVariables.set(\"question_id\", res.id);"
+    language: text/javascript
+order: 1789547335554

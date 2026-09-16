@@ -1,0 +1,22 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/questions/{{question_id}}
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \  \"title\": \"Reverse a linked list (updated)\",\r
+
+    \  \"category\": \"DSA\",\r
+
+    \  \"difficulty\": \"MEDIUM\",\r
+
+    \  \"description\": \"Updated description text.\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_token}}"
+order: 4487191805693841

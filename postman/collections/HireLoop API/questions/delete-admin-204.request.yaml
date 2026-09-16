@@ -1,0 +1,9 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/questions/{{question_id}}
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_token}}"
+order: 4490956823589286

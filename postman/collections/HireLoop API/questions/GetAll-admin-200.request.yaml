@@ -1,0 +1,9 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/questions
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{admin_token}}"
+order: 3123701214998411

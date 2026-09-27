@@ -131,7 +131,7 @@ public class InterviewService {
     private final QuestionRepository questionRepository;
     private final InterviewQuestionRepository interviewQuestionRepository;
 
-    private void checkOwnership(Interview interview, Authentication authentication) {
+    public void checkOwnership(Interview interview, Authentication authentication) {
         User currentUser = userRepository.findByEmail(authentication.getName())
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
 

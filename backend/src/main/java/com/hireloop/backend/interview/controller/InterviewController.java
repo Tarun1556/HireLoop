@@ -1,5 +1,7 @@
 package com.hireloop.backend.interview.controller;
 
+import com.hireloop.backend.interview.dto.AttachQuestionRequest;
+import com.hireloop.backend.interview.dto.InterviewQuestionResponse;
 import com.hireloop.backend.interview.dto.InterviewRequest;
 import com.hireloop.backend.interview.dto.InterviewResponse;
 import com.hireloop.backend.interview.service.InterviewService;
@@ -58,4 +60,31 @@ public class InterviewController {
     public ResponseEntity<List<InterviewResponse>> getMyInterviewsAsCandidate(Authentication authentication) {
         return ResponseEntity.ok(interviewService.getMyInterviewsAsCandidate(authentication));
     }
-}
+    @PostMapping("/{id}/questions")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INTERVIEWER')")
+    public ResponseEntity<InterviewQuestionResponse> attachQuestion(
+        @PathVariable Long id,
+        @Valid @RequestBody AttachQuestionRequest request,
+        Authentication authentication) {
+            InterviewQuestionResponse response = interviewService.attachQuestion(id, request, authentication);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+
+    @GetMapping("/{id}/questions")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INTERVIEWER')")
+    public ResponseEntity<List<InterviewQuestionResponse>> getQuestionsForInterview(
+        @PathVariable Long id,
+        Authentication authentication) {
+            return ResponseEntity.ok(interviewService.getQuestionsForInterview(id, authentication));
+        }
+
+    @DeleteMapping("/{id}/questions/{questionId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INTERVIEWER')")
+    public ResponseEntity<Void> detachQuestion(
+        @PathVariable Long id,
+        @PathVariable Long questionId,
+        Authentication authentication) {
+            interviewService.detachQuestion(id, questionId, authentication);
+            return ResponseEntity.noContent().build();
+        }
+    }

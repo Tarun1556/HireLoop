@@ -1,0 +1,12 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/interviews/4/questions
+method: POST
+body:
+  type: json
+  content: '{ "questionId": 2 }'
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_128e}}"
+order: 4499079582808771

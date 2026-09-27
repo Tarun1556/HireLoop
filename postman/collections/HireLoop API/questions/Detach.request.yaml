@@ -1,0 +1,9 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/api/interviews/4/questions/2
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_128e}}"
+order: 4501680637910898

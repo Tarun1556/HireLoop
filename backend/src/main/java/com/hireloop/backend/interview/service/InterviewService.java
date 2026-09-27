@@ -2,11 +2,17 @@ package com.hireloop.backend.interview.service;
 
 import com.hireloop.backend.candidate.entity.Candidate;
 import com.hireloop.backend.candidate.repository.CandidateRepository;
+import com.hireloop.backend.interview.dto.AttachQuestionRequest;
+import com.hireloop.backend.interview.dto.InterviewQuestionResponse;
 import com.hireloop.backend.interview.dto.InterviewRequest;
 import com.hireloop.backend.interview.dto.InterviewResponse;
 import com.hireloop.backend.interview.entity.Interview;
+import com.hireloop.backend.interview.entity.InterviewQuestion;
 import com.hireloop.backend.interview.entity.InterviewStatus;
+import com.hireloop.backend.interview.repository.InterviewQuestionRepository;
 import com.hireloop.backend.interview.repository.InterviewRepository;
+import com.hireloop.backend.question.entity.Question;
+import com.hireloop.backend.question.repository.QuestionRepository;
 import com.hireloop.backend.user.entity.Role;
 import com.hireloop.backend.user.entity.User;
 import com.hireloop.backend.user.repository.UserRepository;
@@ -46,30 +52,25 @@ public class InterviewService {
         Interview saved = interviewRepository.save(interview);
 
         return toInterviewResponse(saved);
-    }
+}
 
-    public InterviewResponse getInterviewById(Long id, Authentication authentication) {
+   public InterviewResponse getInterviewById(Long id, Authentication authentication) {
         Interview interview = interviewRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Interview not found"));
+            .orElseThrow(() -> new IllegalArgumentException("Interview not found"));
 
-        User currentUser = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        checkOwnership(interview, authentication);
 
-        if (currentUser.getRole() == Role.INTERVIEWER
-                && !interview.getInterviewer().getId().equals(currentUser.getId())) {
-            throw new AccessDeniedException("Not authorized to view this interview");
-        }
         return toInterviewResponse(interview);
-    }
-   public List<InterviewResponse> getInterviewsByCandidateId(Long candidateId) {
+}
+    public List<InterviewResponse> getInterviewsByCandidateId(Long candidateId) {
         if (!candidateRepository.existsById(candidateId)) {
                 throw new IllegalArgumentException("Candidate not found");
         }
 
         return interviewRepository.findByCandidateId(candidateId).stream()
             .map(this::toInterviewResponse)
-            .toList();
-}
+            .toList(); 
+        }
 
     public List<InterviewResponse> getMyInterviewsAsInterviewer(Authentication authentication) {
         User currentUser = userRepository.findByEmail(authentication.getName())
@@ -78,7 +79,7 @@ public class InterviewService {
         return interviewRepository.findByInterviewerId(currentUser.getId()).stream()
                 .map(this::toInterviewResponse)
                 .toList();
-    }
+        }
     public List<InterviewResponse> getMyInterviewsAsCandidate(Authentication authentication) {
         User currentUser = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -89,7 +90,7 @@ public class InterviewService {
         return interviewRepository.findByCandidateId(candidate.getId()).stream()
                 .map(this::toInterviewResponse)
                 .toList();
-    }
+        }
     public InterviewResponse updateInterview(Long id, InterviewUpdateRequest request, Authentication authentication) {
         Interview interview = interviewRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Interview not found"));
@@ -113,7 +114,7 @@ public class InterviewService {
         Interview updated = interviewRepository.save(interview);
 
         return toInterviewResponse(updated);
-    }
+}
     public InterviewResponse toInterviewResponse(Interview interview) {
         return new InterviewResponse(
                 interview.getId(),
@@ -126,5 +127,69 @@ public class InterviewService {
                 interview.getInterviewType(),
                 interview.getCreatedAt()
         );
-    }
+}
+    private final QuestionRepository questionRepository;
+    private final InterviewQuestionRepository interviewQuestionRepository;
+
+    private void checkOwnership(Interview interview, Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (currentUser.getRole() == Role.INTERVIEWER
+            && !interview.getInterviewer().getId().equals(currentUser.getId())) {
+                throw new AccessDeniedException("Not authorized to access this interview");
+        }
+        }
+
+    public InterviewQuestionResponse attachQuestion(Long interviewId, AttachQuestionRequest request, Authentication authentication) {
+        Interview interview = interviewRepository.findById(interviewId)
+            .orElseThrow(() -> new IllegalArgumentException("Interview not found with id: " + interviewId));
+        checkOwnership(interview, authentication); // reuse existing ownership-check helper
+        Question question = questionRepository.findById(request.getQuestionId())
+            .orElseThrow(() -> new IllegalArgumentException("Question not found with id: " + request.getQuestionId()));
+
+        if (interviewQuestionRepository.existsByInterviewIdAndQuestionId(interviewId, request.getQuestionId())) {
+                throw new IllegalArgumentException("Question is already attached to this interview");
+        }
+
+        InterviewQuestion iq = new InterviewQuestion();
+        iq.setInterview(interview);
+        iq.setQuestion(question);
+
+        InterviewQuestion saved = interviewQuestionRepository.save(iq);
+        return toInterviewQuestionResponse(saved);
+}
+
+   public List<InterviewQuestionResponse> getQuestionsForInterview(Long interviewId, Authentication authentication) {
+        Interview interview = interviewRepository.findById(interviewId)
+            .orElseThrow(() -> new IllegalArgumentException("Interview not found with id: " + interviewId));
+        checkOwnership(interview, authentication);
+
+        return interviewQuestionRepository.findByInterviewId(interviewId).stream()
+            .map(this::toInterviewQuestionResponse)
+            .toList();
+        }
+
+   public void detachQuestion(Long interviewId, Long questionId, Authentication authentication) {
+        Interview interview = interviewRepository.findById(interviewId)
+            .orElseThrow(() -> new IllegalArgumentException("Interview not found with id: " + interviewId));
+
+        checkOwnership(interview, authentication);
+
+        InterviewQuestion iq = interviewQuestionRepository.findByInterviewIdAndQuestionId(interviewId, questionId)
+            .orElseThrow(() -> new IllegalArgumentException("Question is not attached to this interview"));
+
+        interviewQuestionRepository.delete(iq);
+}
+
+   private InterviewQuestionResponse toInterviewQuestionResponse(InterviewQuestion iq) {
+        return new InterviewQuestionResponse(
+            iq.getId(),
+            iq.getQuestion().getId(),
+            iq.getQuestion().getTitle(),
+            iq.getQuestion().getCategory(),
+            iq.getQuestion().getDifficulty(),
+            iq.getCreatedAt()
+        );
+}
 }

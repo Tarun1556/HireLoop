@@ -226,15 +226,33 @@ Only fields present in the request body are updated; omitted fields remain uncha
 - `candidateId` field naming ambiguity — `candidates.id` vs `users.id` confusion surfaced during testing; a future rename to `candidateProfileId` was discussed but not yet implemented.
 - No status-transition rules on `PATCH` (e.g. `COMPLETED` → `SCHEDULED` is currently allowed) — accepted as out of scope for MVP.
 
-## 8-Week Roadmap
+## Weeks 5–8: Questions, Evaluation, Ranking, Dashboard
 
-| Week | Focus | Status |
-|---|---|---|
-| 1 | Foundation & project setup | ✅ Complete |
-| 2 | Authentication & Authorization (JWT, roles) | ✅ Complete |
-| 3 | User & Candidate Management | ✅ Complete  |
-| 4 | Interview Scheduling | Not started |
-| 5 | Interview Questions | Not started |
-| 6 | Evaluation | Not started |
-| 7 | Scoring, Ranking & Reports | Not started |
-| 8 | Dashboard, Polish & Deployment Prep | Not started |
+### Endpoints
+| Method | Path | Roles | Purpose |
+|---|---|---|---|
+| POST | /api/questions | ADMIN | Create question |
+| GET | /api/questions, /{id} | ADMIN, INTERVIEWER | List (filter by category/difficulty) / get |
+| PUT, DELETE | /api/questions/{id} | ADMIN | Update / delete |
+| POST | /api/interviews/{id}/questions | ADMIN, INTERVIEWER (own) | Attach question |
+| GET | /api/interviews/{id}/questions | ADMIN, INTERVIEWER (own) | List attached |
+| DELETE | /api/interviews/{id}/questions/{questionId} | ADMIN, INTERVIEWER (own) | Detach |
+| PUT, GET | /api/interviews/{id}/evaluation | ADMIN, INTERVIEWER (own) | Submit/re-submit, fetch |
+| GET | /api/candidates/rankings | ADMIN, INTERVIEWER | Ranked candidates |
+| GET | /api/dashboard/summary | ADMIN | Aggregate counts and average score |
+
+### Key decisions
+- Question category and difficulty are enums, consistent with Role/InterviewStatus/InterviewType.
+- Question-to-interview link is a join entity (`interview_questions`) with a unique (interview, question) constraint.
+- Evaluation is one row per interview (unique FK), editable via PUT (upsert).
+- `overallScore` is server-computed and never client-supplied, weighted by interview type
+  (TECHNICAL 50/20/30, HR 20/50/30, MANAGERIAL 20/40/40, FINAL 34/33/33 for technical/communication/problem-solving).
+- Ranking is the average overall score across a candidate's evaluations; unevaluated candidates are excluded.
+- Ownership checks are shared via a public `InterviewService.checkOwnership()` helper.
+
+### Running with Docker
+Copy `.env.example` to `.env`, fill in values, then `docker compose up --build`.
+Swagger UI: http://localhost:8080/swagger-ui.html
+
+### Deferred
+Double-booking prevention, status-transition rules, 401 vs 403 entry point, refresh tokens, self-registration role restriction.

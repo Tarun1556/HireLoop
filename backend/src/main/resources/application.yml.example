@@ -18,5 +18,5 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
 jwt:
-  secret: wWkCKrLFJ7E65DVTivy3QsmNYdgoe9Ijaxq8X4fhnA0bzMSG
+  secret: change_me_to_a_long_random_string
   expiration-ms: 14400000   # 4 hours

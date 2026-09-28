@@ -117,3 +117,6 @@ variables:
   - key: json_web_token_128e
     secret: true
     disabled: false
+  - key: json_web_token_0jva
+    secret: true
+    disabled: false

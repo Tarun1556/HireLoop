@@ -1,33 +1,15 @@
-import { useState, useEffect } from 'react';
-import apiClient from './services/apiClient';
+import { Routes, Route, Navigate } from 'react-router-dom'
+import LoginPage from '@/pages/LoginPage'
+import RegisterPage from '@/pages/RegisterPage'
+import NotFoundPage from '@/pages/NotFoundPage'
 
-function App() {
-  const [health, setHealth] = useState({ status: 'LOADING...', service: '' });
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    apiClient
-      .get('/health')
-      .then((response) => {
-        setHealth(response.data);
-      })
-      .catch((err) => {
-        console.error('Failed to connect to backend:', err);
-        setError('OFFLINE');
-      });
-  }, []);
-
+export default function App() {
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>HireLoop Frontend</h1>
-      <p>
-        <strong>Backend Status:</strong>{' '}
-        <span style={{ color: error ? 'red' : 'green' }}>
-          {error ? error : `${health.status} (${health.service})`}
-        </span>
-      </p>
-    </div>
-  );
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  )
 }
-
-export default App;

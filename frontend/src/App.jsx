@@ -7,6 +7,7 @@ import RegisterPage from '@/pages/RegisterPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import AppLayout from '@/layouts/AppLayout'
 import PagePlaceholder from '@/pages/PagePlaceholder'
+import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
 
 function RootRedirect() {
   const { user, loading } = useAuth()
@@ -23,7 +24,7 @@ export default function App() {
 
       <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
         <Route element={<AppLayout />}>
-          <Route path="/admin" element={<PagePlaceholder title="Admin Dashboard" />} />
+          <Route path="/admin" element={<AdminDashboardPage />} />
           <Route path="/admin/candidates" element={<PagePlaceholder title="Candidates" />} />
           <Route path="/admin/interviews" element={<PagePlaceholder title="Interviews" />} />
           <Route path="/admin/questions" element={<PagePlaceholder title="Question Bank" />} />

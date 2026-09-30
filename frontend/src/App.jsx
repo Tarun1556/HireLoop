@@ -8,6 +8,8 @@ import NotFoundPage from '@/pages/NotFoundPage'
 import AppLayout from '@/layouts/AppLayout'
 import PagePlaceholder from '@/pages/PagePlaceholder'
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
+import CandidatesPage from '@/pages/candidates/CandidatesPage'
+import CandidateDetailPage from '@/pages/candidates/CandidateDetailPage'
 
 function RootRedirect() {
   const { user, loading } = useAuth()
@@ -25,7 +27,8 @@ export default function App() {
       <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
         <Route element={<AppLayout />}>
           <Route path="/admin" element={<AdminDashboardPage />} />
-          <Route path="/admin/candidates" element={<PagePlaceholder title="Candidates" />} />
+          <Route path="/admin/candidates" element={<CandidatesPage />} />
+          <Route path="/admin/candidates/:id" element={<CandidateDetailPage />} />
           <Route path="/admin/interviews" element={<PagePlaceholder title="Interviews" />} />
           <Route path="/admin/questions" element={<PagePlaceholder title="Question Bank" />} />
           <Route path="/admin/rankings" element={<PagePlaceholder title="Rankings" />} />
@@ -36,7 +39,8 @@ export default function App() {
         <Route element={<AppLayout />}>
           <Route path="/interviewer" element={<PagePlaceholder title="Interviewer Home" />} />
           <Route path="/interviewer/interviews" element={<PagePlaceholder title="My Interviews" />} />
-          <Route path="/interviewer/candidates" element={<PagePlaceholder title="Candidates" />} />
+          <Route path="/interviewer/candidates" element={<CandidatesPage />} />
+          <Route path="/interviewer/candidates/:id" element={<CandidateDetailPage />} />
           <Route path="/interviewer/questions" element={<PagePlaceholder title="Question Bank" />} />
           <Route path="/interviewer/rankings" element={<PagePlaceholder title="Rankings" />} />
         </Route>

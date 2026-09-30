@@ -5,7 +5,8 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import LoginPage from '@/pages/LoginPage'
 import RegisterPage from '@/pages/RegisterPage'
 import NotFoundPage from '@/pages/NotFoundPage'
-import HomePlaceholder from '@/pages/HomePlaceholder'
+import AppLayout from '@/layouts/AppLayout'
+import PagePlaceholder from '@/pages/PagePlaceholder'
 
 function RootRedirect() {
   const { user, loading } = useAuth()
@@ -21,13 +22,31 @@ export default function App() {
       <Route path="/register" element={<RegisterPage />} />
 
       <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
-        <Route path="/admin" element={<HomePlaceholder title="Admin Dashboard" />} />
+        <Route element={<AppLayout />}>
+          <Route path="/admin" element={<PagePlaceholder title="Admin Dashboard" />} />
+          <Route path="/admin/candidates" element={<PagePlaceholder title="Candidates" />} />
+          <Route path="/admin/interviews" element={<PagePlaceholder title="Interviews" />} />
+          <Route path="/admin/questions" element={<PagePlaceholder title="Question Bank" />} />
+          <Route path="/admin/rankings" element={<PagePlaceholder title="Rankings" />} />
+        </Route>
       </Route>
+
       <Route element={<ProtectedRoute allowedRoles={['INTERVIEWER']} />}>
-        <Route path="/interviewer" element={<HomePlaceholder title="Interviewer Home" />} />
+        <Route element={<AppLayout />}>
+          <Route path="/interviewer" element={<PagePlaceholder title="Interviewer Home" />} />
+          <Route path="/interviewer/interviews" element={<PagePlaceholder title="My Interviews" />} />
+          <Route path="/interviewer/candidates" element={<PagePlaceholder title="Candidates" />} />
+          <Route path="/interviewer/questions" element={<PagePlaceholder title="Question Bank" />} />
+          <Route path="/interviewer/rankings" element={<PagePlaceholder title="Rankings" />} />
+        </Route>
       </Route>
+
       <Route element={<ProtectedRoute allowedRoles={['CANDIDATE']} />}>
-        <Route path="/candidate" element={<HomePlaceholder title="Candidate Home" />} />
+        <Route element={<AppLayout />}>
+          <Route path="/candidate" element={<PagePlaceholder title="Candidate Home" />} />
+          <Route path="/candidate/profile" element={<PagePlaceholder title="My Profile" />} />
+          <Route path="/candidate/interviews" element={<PagePlaceholder title="My Interviews" />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

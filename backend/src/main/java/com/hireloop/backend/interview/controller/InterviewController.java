@@ -34,6 +34,7 @@ public class InterviewController {
     public ResponseEntity<InterviewResponse> getInterviewById(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(interviewService.getInterviewById(id, authentication));
     }
+
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'INTERVIEWER')")
     public ResponseEntity<InterviewResponse> updateInterview(
@@ -60,6 +61,7 @@ public class InterviewController {
     public ResponseEntity<List<InterviewResponse>> getMyInterviewsAsCandidate(Authentication authentication) {
         return ResponseEntity.ok(interviewService.getMyInterviewsAsCandidate(authentication));
     }
+
     @PostMapping("/{id}/questions")
     @PreAuthorize("hasAnyRole('ADMIN', 'INTERVIEWER')")
     public ResponseEntity<InterviewQuestionResponse> attachQuestion(
@@ -68,7 +70,7 @@ public class InterviewController {
         Authentication authentication) {
             InterviewQuestionResponse response = interviewService.attachQuestion(id, request, authentication);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }
+    }
 
     @GetMapping("/{id}/questions")
     @PreAuthorize("hasAnyRole('ADMIN', 'INTERVIEWER')")
@@ -76,7 +78,7 @@ public class InterviewController {
         @PathVariable Long id,
         Authentication authentication) {
             return ResponseEntity.ok(interviewService.getQuestionsForInterview(id, authentication));
-        }
+    }
 
     @DeleteMapping("/{id}/questions/{questionId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'INTERVIEWER')")
@@ -86,5 +88,11 @@ public class InterviewController {
         Authentication authentication) {
             interviewService.detachQuestion(id, questionId, authentication);
             return ResponseEntity.noContent().build();
-        }
     }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<InterviewResponse> getAllInterviews() {
+        return interviewService.getAllInterviews();
+    }
+}

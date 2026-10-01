@@ -14,6 +14,9 @@ import InterviewsPage from '@/pages/interviews/InterviewsPage'
 import InterviewDetailPage from '@/pages/interviews/InterviewDetailPage'
 import QuestionBankPage from '@/pages/questions/QuestionBankPage'
 import RankingsPage from '@/pages/rankings/RankingsPage'
+import CandidateHomePage from '@/pages/candidate/CandidateHomePage'
+import MyProfilePage from '@/pages/candidate/MyProfilePage'
+import MyInterviewsPage from '@/pages/candidate/MyInterviewsPage'
 
 function RootRedirect() {
   const { user, loading } = useAuth()
@@ -54,9 +57,9 @@ export default function App() {
 
       <Route element={<ProtectedRoute allowedRoles={['CANDIDATE']} />}>
         <Route element={<AppLayout />}>
-          <Route path="/candidate" element={<PagePlaceholder title="Candidate Home" />} />
-          <Route path="/candidate/profile" element={<PagePlaceholder title="My Profile" />} />
-          <Route path="/candidate/interviews" element={<PagePlaceholder title="My Interviews" />} />
+          <Route path="/candidate" element={<CandidateHomePage />} />
+          <Route path="/candidate/profile" element={<MyProfilePage />} />
+          <Route path="/candidate/interviews" element={<MyInterviewsPage />} />
         </Route>
       </Route>
 

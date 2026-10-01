@@ -42,6 +42,14 @@ export function useUpdateInterview(id) {
   })
 }
 
+export function useMyInterviews(enabled = true) {
+  return useQuery({
+    queryKey: ['interviews', 'mine'],
+    enabled,
+    queryFn: async () => (await api.get('/interviews/candidate/me')).data,
+  })
+} 
+
 export function useInterviewQuestions(id) {
   return useQuery({
     queryKey: ['interviews', id, 'questions'],

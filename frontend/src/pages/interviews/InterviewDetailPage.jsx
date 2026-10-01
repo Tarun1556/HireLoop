@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import EvaluationCard from './EvaluationCard'
 
 const apiError = (err, fallback) => err.response?.data?.message || fallback
 
@@ -201,6 +202,7 @@ export default function InterviewDetailPage() {
           )}
         </CardContent>
       </Card>
+      {i && <EvaluationCard interviewId={id} interviewType={i.interviewType} />}
     </div>
   )
 }

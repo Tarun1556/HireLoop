@@ -13,6 +13,7 @@ import CandidateDetailPage from '@/pages/candidates/CandidateDetailPage'
 import InterviewsPage from '@/pages/interviews/InterviewsPage'
 import InterviewDetailPage from '@/pages/interviews/InterviewDetailPage'
 import QuestionBankPage from '@/pages/questions/QuestionBankPage'
+import RankingsPage from '@/pages/rankings/RankingsPage'
 
 function RootRedirect() {
   const { user, loading } = useAuth()
@@ -35,7 +36,7 @@ export default function App() {
           <Route path="/admin/interviews" element={<InterviewsPage />} />
           <Route path="/admin/interviews/:id" element={<InterviewDetailPage />} />
           <Route path="/admin/questions" element={<QuestionBankPage />} />
-          <Route path="/admin/rankings" element={<PagePlaceholder title="Rankings" />} />
+          <Route path="/admin/rankings" element={<RankingsPage />} />
         </Route>
       </Route>
 
@@ -47,7 +48,7 @@ export default function App() {
           <Route path="/interviewer/candidates" element={<CandidatesPage />} />
           <Route path="/interviewer/candidates/:id" element={<CandidateDetailPage />} />
           <Route path="/interviewer/questions" element={<QuestionBankPage />} />
-          <Route path="/interviewer/rankings" element={<PagePlaceholder title="Rankings" />} />
+          <Route path="/interviewer/rankings" element={<RankingsPage />} />
         </Route>
       </Route>
 

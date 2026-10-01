@@ -6,6 +6,7 @@ import com.hireloop.backend.question.entity.Question;
 import com.hireloop.backend.question.entity.QuestionCategory;
 import com.hireloop.backend.question.entity.QuestionDifficulty;
 import com.hireloop.backend.question.repository.QuestionRepository;
+import com.hireloop.backend.interview.repository.InterviewQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
+    private final InterviewQuestionRepository interviewQuestionRepository;
 
     public QuestionResponse createQuestion(QuestionRequest request) {
         Question question = new Question();
@@ -66,6 +68,10 @@ public class QuestionService {
     }
 
     public void deleteQuestion(Long id) {
+        if (interviewQuestionRepository.existsByQuestionId(id)) {
+            throw new IllegalArgumentException(
+            "This question is attached to an interview and can't be deleted");
+        }
         if (!questionRepository.existsById(id)) {
             throw new IllegalArgumentException("Question not found with id: " + id);
         }

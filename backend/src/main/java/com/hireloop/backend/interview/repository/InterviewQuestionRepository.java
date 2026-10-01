@@ -10,4 +10,5 @@ public interface InterviewQuestionRepository extends JpaRepository<InterviewQues
     List<InterviewQuestion> findByInterviewId(Long interviewId);
     Optional<InterviewQuestion> findByInterviewIdAndQuestionId(Long interviewId, Long questionId);
     boolean existsByInterviewIdAndQuestionId(Long interviewId, Long questionId);
+    boolean existsByQuestionId(Long questionId);
 }

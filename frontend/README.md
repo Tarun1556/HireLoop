@@ -1,16 +1,69 @@
-# React + Vite
+# HireLoop Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React single-page app for the HireLoop interview management platform. Role-based
+UI for admins, interviewers, and candidates, talking to the Spring Boot REST API.
 
-Currently, two official plugins are available:
+## Tech stack
+- React (Vite), React Router
+- Tailwind CSS + shadcn/ui (Radix), Lucide icons
+- TanStack Query (server state), Axios (JWT interceptor)
+- Recharts (dashboard and rankings charts)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Run locally
+The backend must be running first (from the repo root):
 
-## React Compiler
+```bash
+docker compose up
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Then:
 
-## Expanding the ESLint configuration
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:5173
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Other scripts: `npm run build`, `npm run lint`, `npm run preview`.
+
+The API base URL is set in `src/services/apiClient.js` (`http://localhost:8080/api`).
+The backend allows the `http://localhost:5173` origin via CORS.
+
+## Pages by role
+
+| Role | Pages |
+|---|---|
+| Admin | Dashboard (stats + chart), Candidates (list/detail), Interviews (list/schedule/detail with questions + evaluation), Question Bank (full CRUD), Rankings |
+| Interviewer | Home, My Interviews (detail + evaluation), Candidates, Question Bank (read-only), Rankings |
+| Candidate | Home, My Profile (create/edit), My Interviews |
+
+## Structure
+```
+src/
+├── components/   ui/ (shadcn), layout/ (sidebar, topbar), common/, dashboard/, interviews/
+├── context/      AuthContext (user + token)
+├── hooks/        TanStack Query hooks, one file per resource
+├── layouts/      AppLayout (shell), AuthLayout (login/register)
+├── pages/        admin/, candidate/, candidates/, interviewer/, interviews/, questions/, rankings/
+├── services/     apiClient.js (Axios instance + interceptors)
+└── utils/        roles, formatting, per-resource field helpers
+```
+
+## How it works
+- **Auth:** login stores the JWT in `localStorage`; on load the app verifies it via
+  `GET /users/me`. Axios attaches it to every request and logs out on a 401.
+- **Route protection:** `ProtectedRoute` checks login state and allowed roles, and
+  redirects users to their own home page.
+- **Server state:** TanStack Query caches reads; mutations invalidate related queries.
+- **Scores:** the overall score is computed server-side (weighted by interview type).
+  The UI only displays it.
+- **Resilience:** every data page has loading skeletons, empty states, and an error
+  state with retry. An error boundary catches render crashes.
+
+## Known limitations
+- JWT is kept in `localStorage` (accepted trade-off; no refresh tokens)
+- Lists filter and sort on the client (no pagination)
+- Clickable table rows are not keyboard-focusable
+- No dark mode
+- Self-registration only creates candidates in the UI; admin and interviewer
+  accounts are created through the API

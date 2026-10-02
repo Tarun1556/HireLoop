@@ -9,8 +9,7 @@ import ErrorState from '@/components/common/ErrorState'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-
-const ACTIVE = ['SCHEDULED', 'RESCHEDULED']
+import { splitInterviews } from '@/utils/interview'
 
 export default function CandidateHomePage() {
   const { user } = useAuth()
@@ -29,10 +28,7 @@ export default function CandidateHomePage() {
 
   const loading = profile.isLoading || interviews.isLoading
   const list = interviews.data ?? []
-  const now = Date.now()
-  const upcoming = list
-    .filter((i) => ACTIVE.includes(i.status) && new Date(i.scheduledAt) > now)
-    .sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt))
+  const { upcoming } = splitInterviews(list)
   const completed = list.filter((i) => i.status === 'COMPLETED').length
   const next = upcoming[0]
 

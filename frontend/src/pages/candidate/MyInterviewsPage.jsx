@@ -1,91 +1,68 @@
-import { CalendarClock } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { CalendarClock, CheckCircle2, ListChecks } from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth'
 import { useMyInterviews } from '@/hooks/useInterviews'
-import { useMyProfile } from '@/hooks/useMyProfile'
+import { splitInterviews } from '@/utils/interview'
+import StatCard from '@/components/dashboard/StatCard'
 import InterviewCard from '@/components/interviews/InterviewCard'
-import EmptyState from '@/components/common/EmptyState'
 import ErrorState from '@/components/common/ErrorState'
-import { Card } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
-const ACTIVE = ['SCHEDULED', 'RESCHEDULED']
+export default function InterviewerHomePage() {
+  const { user } = useAuth()
+  const { data, isLoading, isError, refetch, isFetching } = useMyInterviews()
 
-function Section({ title, items }) {
-  if (items.length === 0) return null
-  return (
-    <div className="space-y-3">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      {items.map((i) => (
-        <InterviewCard key={i.id} interview={i} />
-      ))}
-    </div>
-  )
-}
-
-export default function MyInterviewsPage() {
-  const profile = useMyProfile()
-  const hasProfile = !!profile.data
-  const {
-    data,
-    isLoading: interviewsLoading,
-    isError,
-    refetch,
-    isFetching,
-  } = useMyInterviews(hasProfile)
-  const isLoading = profile.isLoading || interviewsLoading
-
-  if (profile.isError || isError) {
-    return (
-      <ErrorState
-        onRetry={() => {
-          profile.refetch()
-          refetch()
-        }}
-        retrying={isFetching || profile.isFetching}
-      />
-    )
-  }
+  if (isError) return <ErrorState onRetry={refetch} retrying={isFetching} />
 
   const list = data ?? []
-  const now = Date.now()
-  const isUpcoming = (i) => ACTIVE.includes(i.status) && new Date(i.scheduledAt) > now
-  const upcoming = list
-    .filter(isUpcoming)
-    .sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt))
-  const past = list
-    .filter((i) => !isUpcoming(i))
-    .sort((a, b) => new Date(b.scheduledAt) - new Date(a.scheduledAt))
+  const { upcoming } = splitInterviews(list)
+  const completed = list.filter((i) => i.status === 'COMPLETED').length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">My Interviews</h1>
-        <p className="mt-1 text-muted-foreground">Your scheduled and past interviews.</p>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Welcome, {user.name?.split(' ')[0]}
+        </h1>
+        <p className="mt-1 text-muted-foreground">Your interview schedule at a glance.</p>
       </div>
 
-      {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-20 w-full" />
-          ))}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <StatCard title="Upcoming" value={upcoming.length} icon={CalendarClock} loading={isLoading} />
+        <StatCard title="Completed" value={completed} icon={CheckCircle2} loading={isLoading} />
+        <StatCard title="Total assigned" value={list.length} icon={ListChecks} loading={isLoading} />
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Coming up</h2>
+          <Link
+            to="/interviewer/interviews"
+            className="text-sm text-primary underline-offset-4 hover:underline"
+          >
+            View all
+          </Link>
         </div>
-      ) : list.length === 0 ? (
-        <Card>
-          <EmptyState
-            icon={CalendarClock}
-            title={hasProfile ? 'No interviews yet' : 'Create your profile first'}
-            description={
-              hasProfile
-                ? 'When an interviewer schedules one for you, it will show up here.'
-                : 'Interviews are linked to your candidate profile. Create it from My Profile.'
-            }
-          />
-        </Card>
-      ) : (
-        <>
-          <Section title="Upcoming" items={upcoming} />
-          <Section title="Past" items={past} />
-        </>
-      )}
+        {isLoading ? (
+          <Skeleton className="h-20 w-full" />
+        ) : upcoming.length === 0 ? (
+          <Card>
+            <CardContent className="p-6 text-sm text-muted-foreground">
+              No upcoming interviews. Schedule one from the Interviews page.
+            </CardContent>
+          </Card>
+        ) : (
+          upcoming.slice(0, 5).map((i) => (
+            <InterviewCard
+              key={i.id}
+              interview={i}
+              perspective="interviewer"
+              to={`/interviewer/interviews/${i.id}`}
+            />
+          ))
+        )}
+      </div>
     </div>
   )
 }

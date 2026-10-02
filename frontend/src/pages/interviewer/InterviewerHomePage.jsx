@@ -2,13 +2,12 @@ import { Link } from 'react-router-dom'
 import { CalendarClock, CheckCircle2, ListChecks } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useInterviews } from '@/hooks/useInterviews'
+import { splitInterviews } from '@/utils/interview'
 import StatCard from '@/components/dashboard/StatCard'
 import InterviewCard from '@/components/interviews/InterviewCard'
 import ErrorState from '@/components/common/ErrorState'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-
-const ACTIVE = ['SCHEDULED', 'RESCHEDULED']
 
 export default function InterviewerHomePage() {
   const { user } = useAuth()
@@ -17,10 +16,7 @@ export default function InterviewerHomePage() {
   if (isError) return <ErrorState onRetry={refetch} retrying={isFetching} />
 
   const list = data ?? []
-  const now = Date.now()
-  const upcoming = list
-    .filter((i) => ACTIVE.includes(i.status) && new Date(i.scheduledAt) > now)
-    .sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt))
+  const { upcoming } = splitInterviews(list)
   const completed = list.filter((i) => i.status === 'COMPLETED').length
 
   return (

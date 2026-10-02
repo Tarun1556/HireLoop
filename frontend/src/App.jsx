@@ -6,7 +6,6 @@ import LoginPage from '@/pages/LoginPage'
 import RegisterPage from '@/pages/RegisterPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import AppLayout from '@/layouts/AppLayout'
-import PagePlaceholder from '@/pages/PagePlaceholder'
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
 import CandidatesPage from '@/pages/candidates/CandidatesPage'
 import CandidateDetailPage from '@/pages/candidates/CandidateDetailPage'
@@ -17,6 +16,7 @@ import RankingsPage from '@/pages/rankings/RankingsPage'
 import CandidateHomePage from '@/pages/candidate/CandidateHomePage'
 import MyProfilePage from '@/pages/candidate/MyProfilePage'
 import MyInterviewsPage from '@/pages/candidate/MyInterviewsPage'
+import InterviewerHomePage from '@/pages/interviewer/InterviewerHomePage'
 
 function RootRedirect() {
   const { user, loading } = useAuth()
@@ -45,7 +45,7 @@ export default function App() {
 
       <Route element={<ProtectedRoute allowedRoles={['INTERVIEWER']} />}>
         <Route element={<AppLayout />}>
-          <Route path="/interviewer" element={<PagePlaceholder title="Interviewer Home" />} />
+          <Route path="/interviewer" element={<InterviewerHomePage />} />
           <Route path="/interviewer/interviews" element={<InterviewsPage />} />
           <Route path="/interviewer/interviews/:id" element={<InterviewDetailPage />} />
           <Route path="/interviewer/candidates" element={<CandidatesPage />} />

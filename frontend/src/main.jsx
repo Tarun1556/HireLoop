@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/sonner'
 import App from './App'
 import './index.css'
 import { AuthProvider } from '@/context/AuthContext'
+import ErrorBoundary from '@/components/common/ErrorBoundary'
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
 })
@@ -15,7 +16,9 @@ createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-        <App />
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
         </AuthProvider>
         <Toaster richColors />
       </BrowserRouter>

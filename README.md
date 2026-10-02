@@ -429,25 +429,6 @@ Run backend tests: `cd backend && .\mvnw.cmd test` (requires a reachable MySQL a
 
 ---
 
-## 🗺️ Roadmap
-
-**Planned** (not implemented)
-
-- [ ] Restrict privileged role creation (admin-managed account creation)
-- [ ] Interviewer double-booking prevention
-- [ ] Interview status-transition rules
-- [ ] Refresh tokens / safer token storage
-- [ ] Server-side `resumeUrl` validation
-- [ ] Backend unit/integration tests and frontend tests
-- [ ] Externalised frontend API URL and CORS origins via configuration
-- [ ] Database-level aggregation for dashboard and rankings
-
----
-
-## 📸 Screenshots
-
-_Screenshots have not been added yet._
-
 <!--
 Suggested: add images under docs/screenshots/ and reference them here, e.g.
 ![Admin dashboard](docs/screenshots/admin-dashboard.png)

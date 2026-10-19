@@ -49,13 +49,6 @@ Scores are computed **server-side** using weights that depend on the interview t
 | **Frontend** | React SPA with protected routes per role, TanStack Query data hooks, Recharts charts, shadcn/ui components, toast notifications, error boundary, loading/empty/error states, 404 page |
 | **DevOps** | Dockerfile (multi-stage) and Docker Compose for backend + MySQL |
 
-### 🚧 In Progress
-No unfinished features are tracked in the codebase.
-
-### 🗺️ Planned
-See the [Roadmap](#-roadmap).
-
----
 
 ## 🧰 Tech Stack
 
